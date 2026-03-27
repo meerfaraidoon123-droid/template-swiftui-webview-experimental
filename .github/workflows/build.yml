@@ -7,8 +7,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          xcodebuild -project *.xcodeproj -scheme "ios-webview-experimental-v2" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
-          mkdir Payload
+          xcodebuild -project ios-webview-experimental-v2/ios-webview-experimental-v2.xcodeproj \
+          -scheme "ios-webview-experimental-v2" \
+          -configuration Release \
+          -sdk iphoneos \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_IDENTITY="" \
+          AD_HOC_CODE_SIGNING_ALLOWED=YES
+          
+          mkdir -p Payload
           cp -r build/Release-iphoneos/*.app Payload/
           zip -r YourApp.ipa Payload
       - name: Upload
