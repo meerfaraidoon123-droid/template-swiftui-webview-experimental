@@ -5,13 +5,18 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Force Disable Signing
+        run: |
+          # This finds every project file and removes the "DevelopmentTeam" and "ProvisioningStyle" lines
+          find . -name "project.pbxproj" -exec sed -i '' 's/DevelopmentTeam = [A-Z0-9]*;//g' {} +
+          find . -name "project.pbxproj" -exec sed -i '' 's/ProvisioningStyle = Automatic;//g' {} +
+          find . -name "project.pbxproj" -exec sed -i '' 's/CODE_SIGN_STYLE = Automatic;//g' {} +
+
       - name: Build
         run: |
-          # Find the project automatically
           PROJECT_PATH=$(find . -name "*.xcodeproj" | head -n 1)
           SCHEME_NAME="ios-webview-experimental-v2"
           
-          # This command builds the app and IGNORES all security/signing errors
           xcodebuild build -project "$PROJECT_PATH" \
           -scheme "$SCHEME_NAME" \
           -configuration Release \
@@ -22,12 +27,11 @@ jobs:
           AD_HOC_CODE_SIGNING_ALLOWED=YES \
           COMPILER_INDEX_STORE_ENABLE=NO
           
-          # Move the app into a folder and zip it
           mkdir -p Payload
-          # Search for the built app in the hidden build folder
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d | head -n 1)
           cp -r "$APP_PATH" Payload/
           zip -r YourApp.ipa Payload
+          
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
