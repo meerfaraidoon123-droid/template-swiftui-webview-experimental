@@ -7,17 +7,23 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          xcodebuild -project ios-webview-experimental-v2/ios-webview-experimental-v2.xcodeproj \
-          -scheme "ios-webview-experimental-v2" \
+          # This finds the project file automatically no matter what folder it is in
+          PROJECT_PATH=$(find . -name "*.xcodeproj" | head -n 1)
+          SCHEME_NAME=$(basename "$PROJECT_PATH" .xcodeproj)
+          
+          xcodebuild -project "$PROJECT_PATH" \
+          -scheme "$SCHEME_NAME" \
           -configuration Release \
           -sdk iphoneos \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_IDENTITY="" \
-          AD_HOC_CODE_SIGNING_ALLOWED=YES
+          AD_HOC_CODE_SIGNING_ALLOWED=YES \
+          clean build
           
           mkdir -p Payload
-          cp -r build/Release-iphoneos/*.app Payload/
+          # This finds the built app file automatically
+          cp -r build/Release-iphoneos/*.app Payload/ 2>/dev/null || cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/*.app Payload/
           zip -r YourApp.ipa Payload
       - name: Upload
         uses: actions/upload-artifact@v4
