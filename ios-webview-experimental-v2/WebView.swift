@@ -9,7 +9,7 @@ import SwiftUI
 import WebKit
 
 struct WebView: UIViewRepresentable {
-    let url: URL
+    let url: URL(string: "https://vidbox.cc/home")
     
     func makeUIView(context: Context) -> WKWebView {
         return WKWebView()
@@ -23,8 +23,7 @@ struct WebView: UIViewRepresentable {
 
 struct ContentView: View {
     var body: some View {
-        WebView(url: URL(string: "https://next-test-for-webview.vercel.app/test")!)
-            .edgesIgnoringSafeArea(.all)
+        WebView(url: URL(string: "https://vidbox.cc/home")
     }
 }
 
