@@ -1,0 +1,18 @@
+name: Build IPA
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          xcodebuild -project *.xcodeproj -scheme "ios-webview-experimental-v2" -configuration Release -sdk iphoneos CODE_SIGNING_ALLOWED=NO
+          mkdir Payload
+          cp -r build/Release-iphoneos/*.app Payload/
+          zip -r YourApp.ipa Payload
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: My-iOS-App
+          path: YourApp.ipa
